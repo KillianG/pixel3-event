@@ -1,6 +1,17 @@
+import requests
+import urllib
 from PIL import Image
 import os
 PATH = os.environ.get('PATH_IMAGES', './tests')
+
+
+def push_image_to_ipfs(file_path):
+    NODE = "http://localhost:5005"
+    MFS_PATH = "/current-image"  # mfs path you're trying to write to
+
+    response = requests.post(NODE + "/api/v0/files/write?arg=%s&create=true" % urllib.parse.quote(MFS_PATH),
+                             files={file_path: open(file_path, 'rb')})
+    print(response)
 
 
 def string_to_tuple(color):
@@ -31,6 +42,8 @@ def generate_image(color, nft_id, export_to=None):
         im.save(path)
         if export_to:
             im.save(PATH + '/' + export_to)
+
+    push_image_to_ipfs(path)
 
 
 if __name__ == "__main__":
